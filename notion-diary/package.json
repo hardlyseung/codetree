@@ -1,0 +1,12 @@
+{
+  "name": "notion-diary",
+  "version": "1.0.0",
+  "description": "내 노션 페이지를 다이어리로 보여주는 웹앱",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "demo": "DEMO=1 node server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" }
+}

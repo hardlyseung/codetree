@@ -3,99 +3,124 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Notion Diary</title>
+<title>먼작귀 다이어리</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&display=swap" rel="stylesheet">
 <style>
+  /* 먼작귀 글꼴 파일이 있다면 public/fonts/cute.woff2 (또는 .ttf)로 넣으면 자동으로 우선 적용됩니다 */
+  @font-face { font-family: 'CuteFont'; src: url('/fonts/cute.woff2') format('woff2'), url('/fonts/cute.ttf') format('truetype'); font-display: swap; }
   :root {
-    --bg: #efe9df; --paper: #fffdf8; --ink: #2f2a24; --muted: #8a8174; --line: #e6dccb;
-    --accent: #c0674b; --accent-soft: #f6e3da; --shadow: 0 10px 30px rgba(70, 50, 30, .12);
+    --font-body: 'CuteFont', 'Gaegu', 'Jua', sans-serif;
+    --font-title: 'CuteFont', 'Jua', 'Gaegu', sans-serif;
+    --bg: #fff4f6; --paper: #fffdfa; --ink: #5b4a44; --muted: #a8968f; --line: #f6dde3;
+    --outline: #6b5650; --accent: #ff8fab; --accent-soft: #ffe3ea; --sky: #cfeaff; --butter: #fff2b8;
+    --shadow: 0 4px 0 var(--outline);
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #1d1b18; --paper: #27241f; --ink: #ece4d6; --muted: #9c9283; --line: #3a352d;
-      --accent: #e08a6c; --accent-soft: #3d2c25; --shadow: 0 10px 30px rgba(0,0,0,.4); }
+    :root { --bg: #2a2328; --paper: #362d33; --ink: #f6e6ea; --muted: #b8a3aa; --line: #4a3c44;
+      --outline: #1c171a; --accent: #ff9fb8; --accent-soft: #553a45; --sky: #34485a; --butter: #57502f; }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Gowun Batang', serif; line-height: 1.75; }
+  body { margin: 0; color: var(--ink); font-family: var(--font-body); font-size: 19px; line-height: 1.7;
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--line) 2px, transparent 2.5px), radial-gradient(var(--line) 2px, transparent 2.5px);
+    background-size: 36px 36px; background-position: 0 0, 18px 18px; }
   header { max-width: 1100px; margin: 0 auto; padding: 28px 16px 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  header h1 { font-family: 'Nanum Pen Script', cursive; font-size: 2.6rem; margin: 0; font-weight: 400; }
-  .badge { font-size: .75rem; padding: 2px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+  header h1 { font-family: var(--font-title); font-size: 2.2rem; margin: 0; font-weight: 400; letter-spacing: -.5px; }
+  header h1::after { content: ' ✧'; color: var(--accent); }
+  .badge { font-size: .85rem; padding: 2px 12px; border-radius: 99px; background: var(--butter); border: 2px solid var(--outline); }
   .spacer { flex: 1; }
-  button { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 10px; padding: 6px 14px; }
-  button:hover { border-color: var(--accent); }
-  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button { font: inherit; cursor: pointer; border: 2.5px solid var(--outline); background: var(--paper); color: var(--ink);
+    border-radius: 999px; padding: 4px 16px; box-shadow: 0 3px 0 var(--outline); transition: transform .08s, box-shadow .08s; }
+  button:hover:not(:disabled) { transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 var(--outline); }
+  button.primary { background: var(--accent); color: #fff; font-family: var(--font-title); }
 
   main { max-width: 1100px; margin: 0 auto; padding: 8px 16px 48px; display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
   @media (max-width: 820px) { main { grid-template-columns: 1fr; } }
-  .card { background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; }
-  aside { position: sticky; top: 16px; display: grid; gap: 16px; }
+  .card { background: var(--paper); border: 3px solid var(--outline); border-radius: 28px; box-shadow: var(--shadow); padding: 18px; }
+  aside { position: sticky; top: 16px; display: grid; gap: 18px; }
   @media (max-width: 820px) { aside { position: static; } }
 
   .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .cal-head strong { font-size: 1.1rem; }
-  .cal-head button { padding: 2px 10px; }
-  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-  .cal .dow { font-size: .75rem; color: var(--muted); }
-  .cal .day { aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: .9rem; border: 1px solid transparent; padding: 0; background: none; }
-  .cal .day.has { background: var(--accent-soft); font-weight: 700; }
-  .cal .day.today { border-color: var(--accent); }
-  .cal .day.sel { background: var(--accent); color: #fff; }
-  .cal .day .emo { font-size: .7rem; line-height: 1; height: .8rem; }
-  .cal .day:disabled { cursor: default; opacity: .9; }
+  .cal-head strong { font-family: var(--font-title); font-size: 1.25rem; font-weight: 400; }
+  .cal-head button { padding: 0 12px; font-size: 1.1rem; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+  .cal .dow { font-size: .85rem; color: var(--muted); }
+  .cal .dow:first-child { color: var(--accent); } .cal .dow:nth-child(7) { color: #7fb4e0; }
+  .cal .day { aspect-ratio: 1; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 1rem; border: 2px solid transparent; padding: 0; background: none; box-shadow: none; line-height: 1.1; }
+  .cal .day.has { background: var(--accent-soft); border-color: var(--outline); font-weight: 700; }
+  .cal .day.today { border: 2px dashed var(--accent); }
+  .cal .day.sel { background: var(--accent); color: #fff; border: 2px solid var(--outline); }
+  .cal .day .emo { font-size: .7rem; height: .8rem; }
+  .cal .day:disabled { cursor: default; }
 
-  .stats { display: flex; justify-content: space-around; text-align: center; }
-  .stats b { display: block; font-size: 1.5rem; color: var(--accent); }
-  .stats span { font-size: .8rem; color: var(--muted); }
+  .stats { display: flex; justify-content: space-around; text-align: center; background: var(--sky); }
+  .stats b { display: block; font-family: var(--font-title); font-weight: 400; font-size: 1.7rem; }
+  .stats span { font-size: .85rem; }
 
-  .list { display: grid; gap: 6px; max-height: 40vh; overflow: auto; }
-  .list button { text-align: left; display: flex; gap: 10px; align-items: center; border: none; padding: 8px; }
-  .list button.active { background: var(--accent-soft); }
-  .list small { color: var(--muted); display: block; font-size: .75rem; }
+  .list { display: grid; gap: 8px; max-height: 40vh; overflow: auto; padding: 2px 2px 6px; }
+  .list button { text-align: left; display: flex; gap: 10px; align-items: center; border-radius: 18px; padding: 6px 10px;
+    border-width: 2px; box-shadow: 0 2px 0 var(--outline); }
+  .list button.active { background: var(--butter); }
+  .list small { color: var(--muted); display: block; font-size: .8rem; line-height: 1.2; }
 
-  article.page { min-height: 70vh; padding: 0; overflow: hidden;
-    background-image: repeating-linear-gradient(var(--paper) 0 31px, var(--line) 31px 32px); }
-  .cover { height: 180px; background-size: cover; background-position: center; }
-  .page-inner { padding: 32px 40px 48px; }
-  @media (max-width: 600px) { .page-inner { padding: 24px 18px 36px; } }
-  .date { font-family: 'Nanum Pen Script', cursive; font-size: 1.6rem; color: var(--accent); }
-  .page h1 { margin: 4px 0 8px; font-size: 1.7rem; display: flex; gap: 10px; align-items: center; }
+  article.page { position: relative; min-height: 70vh; padding: 0; overflow: visible; border-radius: 32px;
+    background-image: repeating-linear-gradient(transparent 0 33px, var(--line) 33px 35px); background-color: var(--paper); }
+  /* 마스킹테이프 장식 */
+  article.page::before { content: ''; position: absolute; top: -14px; left: 50%; width: 120px; height: 28px; transform: translateX(-50%) rotate(-3deg);
+    background: repeating-linear-gradient(45deg, var(--accent-soft) 0 8px, var(--butter) 8px 16px); border: 2px solid var(--outline); border-radius: 6px; opacity: .95; }
+  .cover { height: 180px; background-size: cover; background-position: center; border-radius: 29px 29px 0 0; border-bottom: 3px solid var(--outline); }
+  .page-inner { padding: 36px 40px 48px; }
+  @media (max-width: 600px) { .page-inner { padding: 28px 18px 36px; } }
+  .date { display: inline-block; font-size: 1rem; background: var(--accent-soft); border: 2px solid var(--outline); border-radius: 99px; padding: 0 14px; }
+  .page h1 { margin: 10px 0 8px; font-family: var(--font-title); font-weight: 400; font-size: 1.9rem; display: flex; gap: 10px; align-items: center; }
   .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
-  .tags span { font-size: .75rem; background: var(--accent-soft); color: var(--accent); border-radius: 99px; padding: 1px 10px; }
-  .content { font-size: 1.05rem; overflow-wrap: anywhere; }
-  .content img { max-width: 100%; border-radius: 10px; }
-  .content figure { margin: 16px 0; } .content figcaption { color: var(--muted); font-size: .85rem; text-align: center; }
-  .content blockquote { border-left: 3px solid var(--accent); margin: 12px 0; padding: 2px 14px; color: var(--muted); }
-  .content pre { background: var(--bg); padding: 12px; border-radius: 10px; overflow: auto; }
-  .content code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
-  .content .callout { display: flex; gap: 10px; background: var(--bg); padding: 12px 14px; border-radius: 10px; margin: 12px 0; }
+  .tags span { font-size: .85rem; background: var(--sky); border: 2px solid var(--outline); border-radius: 99px; padding: 0 10px; }
+  .content { font-size: 1.15rem; overflow-wrap: anywhere; }
+  .content h2, .content h3, .content h4 { font-family: var(--font-title); font-weight: 400; }
+  .content h3::before, .content h2::before { content: '♡ '; color: var(--accent); }
+  .content img { max-width: 100%; border-radius: 20px; border: 3px solid var(--outline); }
+  .content figure { margin: 16px 0; } .content figcaption { color: var(--muted); font-size: .9rem; text-align: center; }
+  .content blockquote { border-left: 4px dotted var(--accent); margin: 12px 0; padding: 2px 14px; color: var(--muted); }
+  .content pre { background: var(--bg); padding: 12px; border-radius: 16px; border: 2px solid var(--line); overflow: auto; }
+  .content code { background: var(--butter); padding: 1px 6px; border-radius: 8px; font-size: .9em; }
+  .content pre code { background: none; }
+  .content .callout { display: flex; gap: 10px; background: var(--butter); border: 2px solid var(--outline); padding: 10px 14px; border-radius: 20px; margin: 12px 0; }
   .content .todo { display: flex; gap: 8px; align-items: center; }
-  .content .todo .box { width: 18px; height: 18px; border: 1.5px solid var(--muted); border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: .75rem; color: var(--accent); flex: none; }
-  .content .todo.done span:last-child { text-decoration: line-through; color: var(--muted); }
-  .content hr { border: none; border-top: 1px dashed var(--line); margin: 20px 0; }
+  .content .todo .box { width: 20px; height: 20px; border: 2px solid var(--outline); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; color: #fff; flex: none; }
+  .content .todo.done .box { background: var(--accent); }
+  .content .todo.done span:last-child { text-decoration: line-through 2px var(--accent); color: var(--muted); }
+  .content hr { border: none; text-align: center; margin: 20px 0; }
+  .content hr::after { content: '· ✿ · ✿ ·'; color: var(--accent); }
   .content details { margin: 8px 0; } .content summary { cursor: pointer; }
   .content a { color: var(--accent); }
   .muted { color: var(--muted); }
-  .c-gray { color: #9b9a97 } .c-brown { color: #a0765a } .c-orange { color: #d9730d } .c-yellow { color: #c29b10 }
-  .c-green { color: #448361 } .c-blue { color: #337ea9 } .c-purple { color: #9065b0 } .c-pink { color: #c14c8a } .c-red { color: #d44c47 }
-  [class$="_background"] { padding: 0 3px; border-radius: 3px; background: var(--accent-soft); }
-  .footer-link { margin-top: 28px; font-size: .85rem; }
+  .c-gray { color: #9b9a97 } .c-brown { color: #a0765a } .c-orange { color: #e88a3c } .c-yellow { color: #d1a619 }
+  .c-green { color: #5aa47a } .c-blue { color: #5a9fd6 } .c-purple { color: #a07cc5 } .c-pink { color: #e86a9a } .c-red { color: #e0605a }
+  [class$="_background"] { padding: 0 3px; border-radius: 6px; background: var(--accent-soft); }
+  .footer-link { margin-top: 28px; font-size: .95rem; }
   .empty { text-align: center; padding: 80px 20px; color: var(--muted); }
-  .empty .big { font-family: 'Nanum Pen Script', cursive; font-size: 2rem; color: var(--ink); }
-  .error { background: #fbe4e1; color: #a5332a; padding: 10px 14px; border-radius: 10px; margin-bottom: 12px; }
+  .empty .big { font-family: var(--font-title); font-size: 1.9rem; color: var(--ink); }
+  .empty .big::before { content: '(  ˶ˆ꒳ˆ˵ )'; display: block; font-size: 2.4rem; margin-bottom: 8px; color: var(--accent); }
+  .error { background: #ffe1e1; color: #b33a3a; border: 2px solid var(--outline); padding: 10px 14px; border-radius: 18px; margin-bottom: 12px; }
 
-  dialog { border: none; border-radius: 16px; background: var(--paper); color: var(--ink); box-shadow: var(--shadow); width: min(560px, calc(100vw - 32px)); padding: 24px; }
-  dialog::backdrop { background: rgba(0,0,0,.35); }
+  dialog { border: 3px solid var(--outline); border-radius: 28px; background: var(--paper); color: var(--ink); box-shadow: 0 6px 0 var(--outline);
+    width: min(560px, calc(100vw - 32px)); padding: 24px; font-family: var(--font-body); }
+  dialog h2 { font-family: var(--font-title); font-weight: 400; }
+  dialog::backdrop { background: rgba(255, 180, 200, .35); }
   dialog form { display: grid; gap: 10px; }
-  dialog input, dialog textarea { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); }
-  dialog textarea { min-height: 220px; resize: vertical; }
-  .row { display: flex; gap: 8px; } .row > * { flex: 1; } .row input[name=icon] { flex: 0 0 70px; text-align: center; }
-  .moods { display: flex; gap: 4px; flex-wrap: wrap; }
-  .moods button { padding: 2px 8px; font-size: 1.2rem; }
+  dialog input, dialog textarea { font: inherit; padding: 6px 14px; border: 2.5px solid var(--outline); border-radius: 18px; background: var(--bg); color: var(--ink); min-width: 0; }
+  dialog textarea { min-height: 220px; resize: vertical; background-image: repeating-linear-gradient(transparent 0 31px, var(--line) 31px 32px); line-height: 32px; }
+  .row { display: flex; gap: 8px; } .row > * { flex: 1; } .row input[name=icon] { flex: 0 0 64px; text-align: center; }
+  .moods { display: flex; gap: 6px; flex-wrap: wrap; }
+  .moods button { padding: 0 8px; font-size: 1.2rem; box-shadow: 0 2px 0 var(--outline); border-width: 2px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>📔 <span id="diaryName">나의 다이어리</span></h1>
+  <h1>🍙 <span id="diaryName">나의 다이어리</span></h1>
   <span class="badge" id="modeBadge" hidden>데모 모드</span>
   <div class="spacer"></div>
   <button id="todayBtn">오늘</button>
@@ -134,7 +159,7 @@
       <input name="date" type="date" required>
     </div>
     <div class="moods" id="moods"></div>
-    <textarea name="content" placeholder="오늘 하루는 어땠나요?"></textarea>
+    <textarea name="content" placeholder="오늘은 어떤 작고 귀여운 일이 있었나요?"></textarea>
     <div class="row" style="justify-content:flex-end">
       <button value="cancel" formnovalidate style="flex:0">취소</button>
       <button class="primary" value="save" style="flex:0">노션에 저장</button>
@@ -262,7 +287,7 @@ function openWrite() {
   $('#writeDialog').showModal();
 }
 
-$('#moods').innerHTML = ['😊', '😢', '😡', '😴', '🥰', '🤔', '☀️', '🌧️', '💪', '📚']
+$('#moods').innerHTML = ['🥹', '😊', '😭', '😤', '😴', '🥰', '🍙', '🍮', '🌸', '✨']
   .map((e) => `<button type="button">${e}</button>`).join('');
 $('#moods').addEventListener('click', (ev) => { if (ev.target.tagName === 'BUTTON') $('#writeForm').icon.value = ev.target.textContent; });
 
